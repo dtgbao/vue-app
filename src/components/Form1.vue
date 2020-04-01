@@ -2,7 +2,7 @@
    <v-container>
       <ValidationObserver ref="observer" v-slot="{ handleSubmit }">
          <form @submit.prevent="handleSubmit(submit)" novalidate>
-            <ValidationProvider v-slot="{ errors }" name="Name" rules="required|max:10">
+            <ValidationProvider v-slot="{ errors }" name="Họ tên" rules="required|max:10">
                <v-text-field
                   v-model.trim="item.name"
                   :counter="10"
@@ -11,13 +11,38 @@
                   required
                ></v-text-field>
             </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" name="Email" rules="required|email">
-               <v-text-field v-model.trim="item.email" :error-messages="errors" label="E-mail" required></v-text-field>
+            <ValidationProvider v-slot="{ errors }" name="E-mail" rules="required|email">
+               <v-text-field
+                  v-model.trim="item.email"
+                  :error-messages="errors"
+                  label="E-mail"
+                  required
+               ></v-text-field>
             </ValidationProvider>
-            <ValidationProvider v-slot="{ errors, validate }" name="Date" rules="required">
-               <date-picker v-model="item.date" :error-messages="errors" label="Ngày" @blur="validate" required />
+            <ValidationProvider v-slot="{ errors, validate }" name="Ngày bắt đầu" rules="required">
+               <date-picker
+                  type="date-time"
+                  v-model="item.date"
+                  :error-messages="errors"
+                  label="Ngày bắt đầu"
+                  @blur="validate"
+                  required
+               />
             </ValidationProvider>
-            <ValidationProvider v-slot="{ errors, validate }" name="Autocomplete" rules="required">
+            <ValidationProvider
+               v-slot="{ errors, validate ,}"
+               name="Ngày kết thúc"
+               rules="required|isDateAfter:@Ngày bắt đầu"
+            >
+               <date-picker
+                  v-model="item.toDate"
+                  :error-messages="errors"
+                  label="Ngày kết thúc"
+                  @blur="validate"
+                  required
+               />
+            </ValidationProvider>
+            <ValidationProvider v-slot="{ errors, validate }" name="Combobox" rules="required">
                <autocomplete
                   multiple
                   v-model="item.autocomplete"
@@ -51,7 +76,11 @@
                            </v-btn>
                         </td>
                         <td>
-                           <ValidationProvider v-slot="{ errors }" :name="'detailName' + index" rules="required">
+                           <ValidationProvider
+                              v-slot="{ errors }"
+                              :name="'detailName' + index"
+                              rules="required"
+                           >
                               <v-text-field
                                  v-model.trim="detail.name"
                                  :counter="10"
@@ -90,14 +119,7 @@
 </template>
 
 <script>
-import { max } from "vee-validate/dist/rules";
-import { extend } from "vee-validate";
 import Form2 from "./Form2";
-
-extend("max", {
-   ...max,
-   message: "{_field_} không được quá {length} ký tự"
-});
 
 export default {
    components: {
@@ -111,6 +133,7 @@ export default {
          { id: 3, name: "GGFERERER Adams" }
       ],
       item: {
+         toDate: null,
          date: null,
          autocomplete: null,
          name: "",
@@ -140,6 +163,9 @@ export default {
       },
       clear() {
          this.item.name = "";
+         this.item.date = null;
+         this.item.toDate = null;
+         this.item.autocomplete = null;
          this.item.email = "";
          this.item.details = [];
          this.$refs.form2.setItem({ ...this.formItem2 });

@@ -90,7 +90,12 @@ export function parseDate(stringVal, format = "dd/MM/yyyy") {
    return date == "Invalid Date" ? null : date;
 }
 
-export function convertNumber(numberString, digit = 0) {
+export function countDecimals(value) {
+   if (Math.floor(value) === value) return 0;
+   return value.toString().split(".")[1].length || 0;
+}
+
+export function formatNumber(numberString, digit = 0) {
    if (!isNullOrEmpty(numberString) && (numberString >= 0 || numberString < 0)) {
       let number = parseFloat(numberString);
       let hasDecimalPoint = number % 1 != 0;
@@ -105,15 +110,10 @@ export function convertNumber(numberString, digit = 0) {
 }
 
 export function parseNumber(numberString, digit = 0) {
-   if (numberString) {
+   if (isInt(numberString) || isFloat(numberString)) {
       return parseFloat(parseFloat(numberString).toFixed(digit));
    }
    return numberString;
-}
-
-export function countDecimals(value) {
-   if (Math.floor(value) === value) return 0;
-   return value.toString().split(".")[1].length || 0;
 }
 
 export function isInt(n) {
@@ -370,10 +370,6 @@ export function ConvertStringToObject(input) {
       return input.split(",");
    }
    return null;
-}
-
-export function formatNumber(x) {
-   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 export function roundNumber(number) {

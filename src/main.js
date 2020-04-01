@@ -9,8 +9,7 @@ import DatePicker from "./components/DatePicker";
 import Autocomplete from "./components/Autocomplete";
 
 import "./registerServiceWorker";
-import { generateCommonValidator } from "@/utils/validator";
-generateCommonValidator();
+import "@/utils/validator";
 
 Vue.component("ValidationProvider", ValidationProvider);
 Vue.component("ValidationObserver", ValidationObserver);

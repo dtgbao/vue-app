@@ -1,5 +1,6 @@
 <template>
    <v-autocomplete
+      autocomplete="off"
       v-model="inputVal"
       @blur="$emit('blur')"
       :readonly="readonly || false"

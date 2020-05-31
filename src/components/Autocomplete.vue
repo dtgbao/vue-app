@@ -10,7 +10,7 @@
       :cache-items="cacheItems"
       :loading="loading || $store.state.loading"
       :disabled="disabled"
-      :items="this.items || []"
+      :items="serverFiltering ? dataSource : items || []"
       :filled="filled"
       :chips="chips || multiple"
       :deletable-chips="deletableChips || multiple"
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import _debounce from "lodash/debounce";
+import dataService from "@/utils/dataService";
 export default {
    props: {
       value: [String, Number, Array],
@@ -51,11 +53,28 @@ export default {
       items: Array,
       itemText: String,
       itemValue: String,
-      errorMessages: Array
+      errorMessages: Array,
+      serverFiltering: Object,
+      debounceSearch: Number
    },
    data: () => ({
-      search: null
+      dataSource: [],
+      search: null,
+      handleDebounceSearch: null
    }),
+   mounted() {
+      this.handleDebounceSearch = _debounce(async (textSearch) => {
+         if (this.serverFiltering) {
+            const { filterAPI } = this.serverFiltering;
+            let indexOfFirstSlash = filterAPI?.indexOf("/");
+            dataService.setController(filterAPI?.substring(0, indexOfFirstSlash));
+            let result = await dataService.getAll(
+               `${filterAPI?.substring(indexOfFirstSlash + 1, filterAPI?.length)}${textSearch}`
+            );
+            this.dataSource = result || [];
+         } else this.$emit("onSearch", textSearch);
+      }, this.debounceSearch || 400);
+   },
    computed: {
       hasSelectionSlot() {
          return !!this.$slots["selection"];
@@ -86,7 +105,7 @@ export default {
    },
    methods: {
       onSearch(textSearch) {
-         this.$emit("onSearch", textSearch);
+         this.handleDebounceSearch(textSearch);
       }
    }
 };

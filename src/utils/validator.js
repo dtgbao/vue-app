@@ -32,6 +32,7 @@ extend("min", {
 extend("isDateBefore", {
    params: ["target"],
    validate(value, { target }) {
+      if (!value || !target) return true;
       let result = compareAsc(new Date(value), new Date(target));
       return result == -1;
    },
@@ -41,6 +42,7 @@ extend("isDateBefore", {
 extend("isDateAfter", {
    params: ["target"],
    validate(value, { target }) {
+      if (!value || !target) return true;
       let result = compareAsc(new Date(value), new Date(target));
       return result == 1;
    },
